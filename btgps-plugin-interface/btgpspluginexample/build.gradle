@@ -1,0 +1,11 @@
+apply plugin: 'android'
+
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
+}
+
+dependencies {
+    compile project(':plugininterface')
+}

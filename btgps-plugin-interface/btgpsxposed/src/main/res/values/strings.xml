@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Xposed Plugin for Bluetooth GPS Provider</string>
+    <string name="hello_world">This is the Xposed plugin for Bluetooth GPS Provider.</string>
+
+</resources>

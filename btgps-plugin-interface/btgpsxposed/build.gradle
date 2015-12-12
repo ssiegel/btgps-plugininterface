@@ -1,0 +1,16 @@
+apply plugin: 'android'
+
+
+configurations {
+    provided
+}
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion '23.0.2'
+}
+
+dependencies {
+    compile project(':plugininterface')
+    provided fileTree(dir: 'framework_libs', include: '*.jar')
+}

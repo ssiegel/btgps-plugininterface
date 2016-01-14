@@ -77,7 +77,7 @@ public class PluginService extends Service {
 
         @Override
         public boolean noMockLocations() throws RemoteException {
-            return true;
+            return false;
         }
 
         @Override

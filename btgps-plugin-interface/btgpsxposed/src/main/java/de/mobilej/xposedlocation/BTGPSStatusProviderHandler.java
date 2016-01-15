@@ -9,11 +9,14 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import de.mobilej.btgpsxposed.BuildConfig;
 import de.robv.android.xposed.XposedBridge;
 
 public class BTGPSStatusProviderHandler implements InvocationHandler {
+
+    private static final boolean LOG = Boolean.parseBoolean("false");
 
     public static final String ACTION_STATUS_UPDATE = "BTGPS_STATDATE";
 
@@ -56,7 +59,9 @@ public class BTGPSStatusProviderHandler implements InvocationHandler {
 
     private Context ctx;
 
-    private ArrayList<Object> listeners = new ArrayList<Object>();
+    private List<Object> listeners = new CopyOnWriteArrayList<>();
+
+    ArrayList<Object> deadListeners = new ArrayList<>();
 
     private Object locationManager;
 
@@ -76,7 +81,7 @@ public class BTGPSStatusProviderHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object o, Method m, Object[] args) throws Throwable {
-        if (BuildConfig.DEBUG) {
+        if (LOG) {
             XposedBridge.log("about to invoke " + m.getName() + " on gps status provider!");
         }
 
@@ -96,8 +101,8 @@ public class BTGPSStatusProviderHandler implements InvocationHandler {
     }
 
     public void sendNMEAUpdate(String nmea) {
-        ArrayList<Object> deadListeners = new ArrayList<Object>();
-        for (Object listener : listeners) {
+        for (int i = 0; i < listeners.size(); i++) {
+            Object listener = listeners.get(i);
             long timestamp = System.currentTimeMillis();
 
             try {
@@ -112,11 +117,12 @@ public class BTGPSStatusProviderHandler implements InvocationHandler {
         for (Object deadListener : deadListeners) {
             listeners.remove(deadListener);
         }
+        deadListeners.clear();
     }
 
     /**
      * Methods of IGpsStatusListener
-     *
+     * <p/>
      * void onGpsStarted(); void onGpsStopped(); void onFirstFix(int ttff); void
      * onSvStatusChanged(int svCount, in int[] prns, in float[] snrs, in float[] elevations, in
      * float[] azimuths, int ephemerisMask, int almanacMask, int usedInFixMask); void
@@ -130,7 +136,7 @@ public class BTGPSStatusProviderHandler implements InvocationHandler {
     }
 
     public static void sendStatus(Context ctx, int[] prns, float[] snrs, float[] elevations,
-            float[] azimuths, int ephemerisMask, int almanacMask, int usedInFixMask) {
+                                  float[] azimuths, int ephemerisMask, int almanacMask, int usedInFixMask) {
         Intent intent = new Intent(ACTION_STATUS_UPDATE);
         intent.putExtra(EXTRA_PRNS, prns);
         intent.putExtra(EXTRA_SNRS, snrs);
@@ -143,9 +149,9 @@ public class BTGPSStatusProviderHandler implements InvocationHandler {
     }
 
     public void sendStatusUpdate(int[] prns, float[] snrs, float[] elevations, float[] azimuths,
-            int ephemerisMask, int almanacMask, int usedInFixMask) {
-        ArrayList<Object> deadListeners = new ArrayList<Object>();
-        for (Object listener : listeners) {
+                                 int ephemerisMask, int almanacMask, int usedInFixMask) {
+        for (int i = 0; i < listeners.size(); i++) {
+            Object listener = listeners.get(i);
             int svCount = prns.length;
             try {
                 callOnSvStatusChanged(listener, svCount, prns, snrs, elevations, azimuths,
@@ -162,22 +168,25 @@ public class BTGPSStatusProviderHandler implements InvocationHandler {
         for (Object deadListener : deadListeners) {
             listeners.remove(deadListener);
         }
+        deadListeners.clear();
     }
 
     private void callOnSvStatusChanged(Object listener, int svCount, int[] prns, float[] snrs,
-            float[] elevations, float[] azimuths, int ephemerisMask, int almanacMask,
-            int usedInFixMask) throws InvocationTargetException {
+                                       float[] elevations, float[] azimuths, int ephemerisMask, int almanacMask,
+                                       int usedInFixMask) throws InvocationTargetException {
         try {
 
-            Method[] allMethods = listener.getClass().getDeclaredMethods();
-            for (Method m : allMethods) {
-                XposedBridge
-                        .log(">" + m.getName() + " " + m.toString() + " " + m.toGenericString());
-            }
-            allMethods = listener.getClass().getMethods();
-            for (Method m : allMethods) {
-                XposedBridge
-                        .log("]" + m.getName() + " " + m.toString() + " " + m.toGenericString());
+            if (LOG) {
+                Method[] allMethods = listener.getClass().getDeclaredMethods();
+                for (Method m : allMethods) {
+                    XposedBridge
+                            .log(">" + m.getName() + " " + m.toString() + " " + m.toGenericString());
+                }
+                allMethods = listener.getClass().getMethods();
+                for (Method m : allMethods) {
+                    XposedBridge
+                            .log("]" + m.getName() + " " + m.toString() + " " + m.toGenericString());
+                }
             }
 
             Method m = listener.getClass()

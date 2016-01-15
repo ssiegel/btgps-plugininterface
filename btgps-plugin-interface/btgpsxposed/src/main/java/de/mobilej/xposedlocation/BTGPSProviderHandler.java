@@ -13,10 +13,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import de.mobilej.btgpsxposed.BuildConfig;
 import de.robv.android.xposed.XposedBridge;
 
 public class BTGPSProviderHandler implements InvocationHandler {
+
+    private static final boolean LOG = Boolean.parseBoolean("false");
 
     public static final String ACTION_LOCATION_UPDATE = "BTGPS_LOCUPDATE";
 
@@ -59,7 +60,7 @@ public class BTGPSProviderHandler implements InvocationHandler {
     @Override
     public Object invoke(Object o, Method m, Object[] args) throws Throwable {
 
-        if (BuildConfig.DEBUG) {
+        if (LOG) {
             XposedBridge.log("about to invoke " + m.getName() + " on gps provider!");
         }
 

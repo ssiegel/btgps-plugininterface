@@ -1,1 +1,1 @@
-include ':btgpspluginexample', ':plugininterface', ':btgpsxposed', ':btgpsxposed_lite'
+include ':btgpspluginexample', ':plugininterface', ':btgpsxposed', ':btgpsxposed_lite', ':btgpsplaybacknmea'

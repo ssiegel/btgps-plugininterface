@@ -73,7 +73,7 @@ public class XposedHelper extends BroadcastReceiver {
                         .getBooleanExtra(ACTION_STICKY_RUNNING_EXTRA_STATE,
                                 false);
             }
-
+            registered = true;
         }
 
         return runningState;

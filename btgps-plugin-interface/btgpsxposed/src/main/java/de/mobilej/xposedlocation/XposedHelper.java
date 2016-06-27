@@ -12,10 +12,10 @@ import java.io.FileReader;
 
 public class XposedHelper extends BroadcastReceiver {
 
-    public static final String ACTION_STICKY_RUNNING = "btgps_running_state_sticky";
+    public static final String ACTION_STICKY_RUNNING = "de.mobilej.btgps.Service";
 
     public static final String ACTION_STICKY_RUNNING_EXTRA_STATE
-            = "btgps_running_state_sticky_xtra_state";
+            = "RUNNING";
 
     public static final String INSTALLER_PACKAGE_NAME = "de.robv.android.xposed.installer";
 
@@ -67,13 +67,9 @@ public class XposedHelper extends BroadcastReceiver {
                 appCtx = ctx;
             }
             IntentFilter filter = new IntentFilter(ACTION_STICKY_RUNNING);
-            Intent i = appCtx.registerReceiver(new XposedHelper(), filter);
-            if (i != null) {
-                runningState = i
-                        .getBooleanExtra(ACTION_STICKY_RUNNING_EXTRA_STATE,
-                                false);
-            }
+            appCtx.registerReceiver(new XposedHelper(), filter);
 
+            registered = true;
         }
 
         return runningState;

@@ -8,6 +8,12 @@ configurations {
 android {
     compileSdkVersion 21
     buildToolsVersion '23.0.2'
+
+    defaultConfig {
+        applicationId "de.mobilej.btgpsxposed"
+        versionCode 2
+        versionName "0.2.0"
+    }
 }
 
 dependencies {
